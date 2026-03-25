@@ -1,0 +1,38 @@
+# Nixpacks build configuration
+# Tells Railway/Nixpacks to use PHP 8.2 and the required extensions.
+# Docs: https://nixpacks.com/docs/configuration/file
+
+providers = ["php"]
+
+[phases.setup]
+# PHP 8.2 with all extensions required by Laravel + PostgreSQL.
+# Note: we use predis/predis (pure PHP) for Redis — no C extension required.
+nixPkgs = [
+    "php82",
+    "php82Packages.composer",
+    "php82Extensions.bcmath",
+    "php82Extensions.ctype",
+    "php82Extensions.curl",
+    "php82Extensions.dom",
+    "php82Extensions.fileinfo",
+    "php82Extensions.mbstring",
+    "php82Extensions.openssl",
+    "php82Extensions.pdo",
+    "php82Extensions.pdo_pgsql",
+    "php82Extensions.tokenizer",
+    "php82Extensions.xml",
+    "php82Extensions.zip",
+]
+
+[phases.install]
+cmds = ["composer install --no-dev --optimize-autoloader"]
+
+[phases.build]
+cmds = [
+    "php artisan config:cache",
+    "php artisan route:cache",
+    "php artisan view:cache",
+]
+
+[start]
+cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"

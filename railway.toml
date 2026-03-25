@@ -1,0 +1,31 @@
+# Railway configuration
+# Docs: https://docs.railway.com/reference/config-as-code
+
+[build]
+builder = "nixpacks"
+# Build phases (install deps, cache config/routes/views) are defined in nixpacks.toml.
+
+[deploy]
+# Run migrations first, then start the built-in PHP development server.
+# For production traffic, swap `php artisan serve` for a proper FPM+nginx setup
+# or Laravel Octane (frankenphp/roadrunner). For Railway testing this is fine.
+startCommand = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+
+# ──────────────────────────────────────────────────────────────────────────────
+# WORKER SERVICE
+# ──────────────────────────────────────────────────────────────────────────────
+# Railway does not support multiple processes in a single service via this file.
+# Deploy a second Railway service from the same Git repo and override the start
+# command in the Railway dashboard (or its own railway.toml) to:
+#
+#   php artisan horizon
+#
+# That second service shares the same environment variables and will connect to
+# the same PostgreSQL and Redis instances.
+#
+# See README.md → "Deploying the Queue Worker" for step-by-step instructions.
+# ──────────────────────────────────────────────────────────────────────────────
