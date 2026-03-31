@@ -6,7 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
-class HealthController extends Controller
+class HealthController
 {
     public function check(): JsonResponse
     {
